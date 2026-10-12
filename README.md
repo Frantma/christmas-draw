@@ -1,5 +1,9 @@
 # Tajný Ježíšek
 
+**Produkce:** https://christmas-draw-rose.vercel.app · Vercel projekt `martin-frantas-projects/christmas-draw` · Supabase `arpiixkrcbwznycupacs`
+
+Push do `main` nasadí produkci automaticky (Vercel ↔ GitHub), push jiné větve vytvoří náhledové nasazení.
+
 Vánoční losování dárků pro rodinu. Next.js 16 (App Router), shadcn/ui + Tailwind CSS v4, Supabase (Auth, Postgres, Storage), nasazení na Vercel.
 
 ## Jak to funguje
@@ -21,7 +25,7 @@ npm run db:deploy                         # migrace + nastavení Auth
 
 Migrace vytvoří tabulky, RLS, funkce, bucket `wish-images` a správce `martinfran@email.cz`. Nová změna schématu se přidává jako nový soubor: `npx supabase migration new <nazev>`, potom `npm run db:deploy`.
 
-Po nasazení na Vercel změň v `supabase/config.toml` `site_url` na produkční doménu a spusť `npm run db:config`.
+Produkční doména je v `supabase/config.toml` (`site_url`). Když se změní, uprav ji tam a spusť `npm run db:config`.
 
 ## Proměnné prostředí
 
