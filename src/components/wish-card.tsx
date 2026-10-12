@@ -34,7 +34,12 @@ export function WishCard({
   actions: React.ReactNode;
 }) {
   return (
-    <Card className={cn("gap-0 rounded-[22px] py-0 transition-opacity", bought && "opacity-60")}>
+    <Card
+      className={cn(
+        "gap-0 rounded-[22px] py-0 transition-[opacity,translate,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(14,42,32,.12)]",
+        bought && "opacity-60",
+      )}
+    >
       <div className="relative h-44 flex-none">
         {wish.image_url ? (
           <img src={wish.image_url} alt={wish.title} className="size-full object-cover" />
@@ -42,7 +47,7 @@ export function WishCard({
           <WishPlaceholder index={index} className="size-full" />
         )}
         {bought && (
-          <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[13px] font-bold text-pine-700">
+          <span className="pop absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-[13px] font-bold text-pine-700">
             <CheckIcon aria-hidden="true" className="size-3.5" strokeWidth={3} />
             Koupeno
           </span>

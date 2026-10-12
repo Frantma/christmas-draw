@@ -15,10 +15,14 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
 
   return (
     <WishEditorProvider userId={me.userId}>
-      <header className="bg-pine-900 text-cream">
+      <header className="bg-pine-900 text-cream" style={{ viewTransitionName: "site-header" }}>
         <div className="mx-auto flex max-w-[1200px] flex-wrap items-center gap-x-3 gap-y-1.5 px-4 pt-2.5 pb-2 sm:gap-x-6 sm:gap-y-3 sm:px-6 sm:py-3.5">
-          <Link href="/" className="flex min-h-11 items-center gap-2.5 py-1.5 text-cream no-underline hover:text-white">
-            <StarMark className="text-gold" />
+          <Link
+            href="/"
+            transitionTypes={["nav-back"]}
+            className="group flex min-h-11 items-center gap-2.5 py-1.5 text-cream no-underline hover:text-white"
+          >
+            <StarMark className="twinkle text-gold" />
             <span className="font-heading text-[21px] font-semibold">Tajný Ježíšek</span>
           </Link>
           <AppNav isAdmin={me.is_admin} />
@@ -33,7 +37,13 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
             <form action={signOut}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button type="submit" variant="onDark" size="icon" className="border-transparent" aria-label="Odhlásit se">
+                  <Button
+                    type="submit"
+                    variant="onDark"
+                    size="icon"
+                    className="border-transparent"
+                    aria-label="Odhlásit se"
+                  >
                     <LogOutIcon aria-hidden="true" />
                   </Button>
                 </TooltipTrigger>

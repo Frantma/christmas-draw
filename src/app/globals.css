@@ -138,3 +138,180 @@
 @media (prefers-reduced-motion: reduce) {
   .flake { display: none; animation: none; }
 }
+
+/* ---------- Animace ---------- */
+
+/* Houpající se vánoční koule (zavěšená nahoře uprostřed) */
+@utility swing {
+  transform-origin: 50% 0;
+  animation: swing 6s ease-in-out infinite;
+}
+@keyframes swing {
+  0%, 100% { rotate: -4deg; }
+  50% { rotate: 4deg; }
+}
+
+/* Pečeť, která láká ke kliknutí */
+@utility breathe {
+  animation: breathe 2.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { scale: 1; box-shadow: 0 0 0 6px rgba(201, 161, 74, 0.35); }
+  50% { scale: 1.05; box-shadow: 0 0 0 14px rgba(201, 161, 74, 0.12); }
+}
+
+/* Otevírání obálky (běží před view transition na odhalení) */
+@utility flap-open {
+  transform-origin: 50% 0;
+  animation: flap-open 0.55s cubic-bezier(0.5, 0, 0.3, 1) forwards;
+}
+@keyframes flap-open {
+  to { transform: scaleY(-1); }
+}
+@utility seal-break {
+  animation: seal-break 0.45s ease-in forwards;
+}
+@keyframes seal-break {
+  40% { scale: 1.25; rotate: 12deg; }
+  to { scale: 0; rotate: -30deg; opacity: 0; }
+}
+@utility letter-rise {
+  animation: letter-rise 0.6s 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes letter-rise {
+  from { translate: 0 100%; }
+  to { translate: 0 18%; }
+}
+
+/* Poskočení (zatržítko „koupeno“) */
+@utility pop {
+  animation: pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes pop {
+  from { scale: 0.4; opacity: 0; }
+  to { scale: 1; opacity: 1; }
+}
+
+/* Třpyt hvězdy v logu */
+@utility twinkle {
+  transition: rotate 0.5s cubic-bezier(0.3, 1.6, 0.5, 1), scale 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.group:hover .twinkle,
+.group:focus-visible .twinkle {
+  rotate: 72deg;
+  scale: 1.12;
+}
+
+/* ---------- View transitions (React <ViewTransition>) ---------- */
+
+:root {
+  --vt-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::view-transition {
+  pointer-events: none;
+}
+
+/* Hlavička stojí, posouvá se jen obsah */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Navigace podle pořadí v menu */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation: 150ms ease-in both vt-fade reverse, 400ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation: 210ms ease-out 150ms both vt-fade, 400ms ease-in-out both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation: 150ms ease-in both vt-fade reverse, 400ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation: 210ms ease-out 150ms both vt-fade, 400ms ease-in-out both vt-slide;
+}
+
+/* Otevření obálky */
+::view-transition-old(.seal-out) {
+  animation: 220ms ease-in both vt-seal-out;
+}
+::view-transition-new(.reveal) {
+  animation: 650ms var(--vt-ease) 160ms both vt-reveal;
+}
+
+/* Položky seznamů: příchod, odchod, přesun */
+::view-transition-new(.item-enter) {
+  animation: 320ms var(--vt-ease) both vt-pop-in;
+}
+::view-transition-old(.item-exit) {
+  animation: 200ms ease-in both vt-pop-out;
+}
+::view-transition-group(.item-move) {
+  animation-duration: 380ms;
+  animation-timing-function: var(--vt-ease);
+}
+
+/* Prolnutí obsahu na stejném místě */
+::view-transition-old(.swap) {
+  animation: 150ms ease-in both vt-fade reverse;
+}
+::view-transition-new(.swap) {
+  animation: 260ms ease-out 120ms both vt-fade;
+}
+
+@keyframes vt-fade {
+  from { opacity: 0; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); }
+}
+@keyframes vt-slide {
+  from { translate: var(--slide-offset); }
+  to { translate: 0; }
+}
+@keyframes vt-seal-out {
+  to { opacity: 0; scale: 0.92; filter: blur(4px); }
+}
+@keyframes vt-reveal {
+  from { opacity: 0; scale: 0.94; filter: blur(8px); }
+  to { opacity: 1; scale: 1; filter: blur(0); }
+}
+@keyframes vt-pop-in {
+  from { opacity: 0; scale: 0.9; }
+  to { opacity: 1; scale: 1; }
+}
+@keyframes vt-pop-out {
+  to { opacity: 0; scale: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+/* Celá stránka se při změnách neprolíná – animují jen pojmenované části */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}

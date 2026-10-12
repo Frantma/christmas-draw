@@ -5,6 +5,7 @@ import { CheckIcon, PlusIcon, ShuffleIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { addParticipant, cancelDraw, removeParticipant, runDraw, updateSettings } from "@/app/actions";
 import { PersonAvatar } from "@/components/person-avatar";
+import { ItemTransition, SwapTransition } from "@/components/transitions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,20 +62,22 @@ export function ParticipantsPanel({ members, drawn }: { members: Member[]; drawn
 
       <ul className="flex flex-col">
         {members.map((m) => (
-          <li key={m.id} className="flex items-center gap-3.5 border-t border-[#eee5d3] py-3">
-            <PersonAvatar name={m.name} color={m.color} className="size-[42px]" textClassName="text-sm" />
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <span className="flex flex-wrap items-center gap-2 font-bold">
-                {m.name}
-                {m.is_admin && <Badge className="bg-pine-700 font-bold text-white">Správce</Badge>}
+          <ItemTransition key={m.id}>
+            <li className="flex items-center gap-3.5 border-t border-[#eee5d3] py-3">
+              <PersonAvatar name={m.name} color={m.color} className="size-[42px]" textClassName="text-sm" />
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="flex flex-wrap items-center gap-2 font-bold">
+                  {m.name}
+                  {m.is_admin && <Badge className="bg-pine-700 font-bold text-white">Správce</Badge>}
+                </span>
+                <span className="truncate text-sm text-muted-foreground">{m.email}</span>
+              </div>
+              <span className="hidden text-sm whitespace-nowrap text-muted-foreground min-[421px]:inline">
+                {m.wish_count} přání
               </span>
-              <span className="truncate text-sm text-muted-foreground">{m.email}</span>
-            </div>
-            <span className="hidden text-sm whitespace-nowrap text-muted-foreground min-[421px]:inline">
-              {m.wish_count} přání
-            </span>
-            {!drawn && !m.is_admin ? <RemoveParticipant member={m} /> : <span className="w-11 flex-none" />}
-          </li>
+              {!drawn && !m.is_admin ? <RemoveParticipant member={m} /> : <span className="w-11 flex-none" />}
+            </li>
+          </ItemTransition>
         ))}
       </ul>
 
@@ -195,42 +198,50 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
       </p>
 
       {!status.drawn ? (
-        <div className="flex flex-col gap-2.5">
-          <Button size="lg" disabled={n < 3 || pending} onClick={() => run(runDraw, "Rozlosováno. Každý teď najde jméno ve své obálce.")}>
-            {pending ? <Spinner /> : <ShuffleIcon aria-hidden="true" />}
-            Rozlosovat {participantsText(n)}
-          </Button>
-          {n < 3 && <span className="text-sm text-gold-light">K losování jsou potřeba aspoň 3 účastníci.</span>}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3.5">
-          <Badge className="h-auto gap-2 self-start bg-gold-light px-3.5 py-2 text-sm font-bold text-pine-900">
-            <CheckIcon aria-hidden="true" strokeWidth={3} />
-            Rozlosováno · {n} {plural(n, "dvojice", "dvojice", "dvojic")}
-          </Badge>
-          <span className="text-sm text-cream/80">
-            Obálku si zatím otevřelo {status.opened} z {n}.
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <ConfirmButton
-              variant="outline"
-              className="border-[#d9ccb3] bg-white text-foreground"
-              disabled={pending}
-              label="Losovat znovu"
-              title="Losovat znovu?"
-              description="Všem se vylosuje nový člověk a otevřené obálky i značky „koupeno“ se vynulují."
-              onConfirm={() => run(runDraw, "Rozlosováno znovu.")}
-            />
-            <ConfirmButton
-              variant="onDark"
-              disabled={pending}
-              label="Zrušit losování"
-              title="Zrušit losování?"
-              description="Dvojice se smažou a skupinu půjde znovu upravovat. Přání zůstanou."
-              onConfirm={() => run(cancelDraw, "Losování zrušeno")}
-            />
+        <SwapTransition>
+          <div className="flex flex-col gap-2.5">
+            <Button
+              size="lg"
+              disabled={n < 3 || pending}
+              onClick={() => run(runDraw, "Rozlosováno. Každý teď najde jméno ve své obálce.")}
+            >
+              {pending ? <Spinner /> : <ShuffleIcon aria-hidden="true" />}
+              Rozlosovat {participantsText(n)}
+            </Button>
+            {n < 3 && <span className="text-sm text-gold-light">K losování jsou potřeba aspoň 3 účastníci.</span>}
           </div>
-        </div>
+        </SwapTransition>
+      ) : (
+        <SwapTransition>
+          <div className="flex flex-col gap-3.5">
+            <Badge className="h-auto gap-2 self-start bg-gold-light px-3.5 py-2 text-sm font-bold text-pine-900">
+              <CheckIcon aria-hidden="true" strokeWidth={3} />
+              Rozlosováno · {n} {plural(n, "dvojice", "dvojice", "dvojic")}
+            </Badge>
+            <span className="text-sm text-cream/80">
+              Obálku si zatím otevřelo {status.opened} z {n}.
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <ConfirmButton
+                variant="outline"
+                className="border-[#d9ccb3] bg-white text-foreground"
+                disabled={pending}
+                label="Losovat znovu"
+                title="Losovat znovu?"
+                description="Všem se vylosuje nový člověk a otevřené obálky i značky „koupeno“ se vynulují."
+                onConfirm={() => run(runDraw, "Rozlosováno znovu.")}
+              />
+              <ConfirmButton
+                variant="onDark"
+                disabled={pending}
+                label="Zrušit losování"
+                title="Zrušit losování?"
+                description="Dvojice se smažou a skupinu půjde znovu upravovat. Přání zůstanou."
+                onConfirm={() => run(cancelDraw, "Losování zrušeno")}
+              />
+            </div>
+          </div>
+        </SwapTransition>
       )}
     </section>
   );

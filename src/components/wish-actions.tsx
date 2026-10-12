@@ -3,7 +3,7 @@
 import { useOptimistic, useTransition } from "react";
 import { CheckIcon, PencilIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
-import { deleteWish, revealEnvelope, setBought } from "@/app/actions";
+import { deleteWish, setBought } from "@/app/actions";
 import { useWishEditor } from "@/components/wish-editor";
 import {
   AlertDialog,
@@ -115,28 +115,8 @@ export function BuyToggle({ wishId, bought }: { wishId: string; bought: boolean 
         })
       }
     >
-      <CheckIcon aria-hidden="true" strokeWidth={2.4} />
+      <CheckIcon key={String(optimistic)} aria-hidden="true" strokeWidth={2.4} className={optimistic ? "pop" : undefined} />
       {optimistic ? "Koupeno" : "Označit jako koupené"}
-    </Button>
-  );
-}
-
-export function RevealButton({ size = "default" }: { size?: "default" | "lg" }) {
-  const [pending, startTransition] = useTransition();
-  return (
-    <Button
-      type="button"
-      size={size}
-      disabled={pending}
-      onClick={() =>
-        startTransition(async () => {
-          const result = await revealEnvelope();
-          if (result.error) toast.error(result.error);
-        })
-      }
-    >
-      {pending && <Spinner />}
-      Otevřít obálku
     </Button>
   );
 }
