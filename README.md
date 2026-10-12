@@ -62,3 +62,13 @@ UI komponenty jsou ze shadcn/ui (`src/components/ui`), další přidáš přes `
 
 - Bez SMTP nejde obnovit zapomenuté heslo e-mailem. Správce může heslo resetovat v Supabase dashboardu (*Authentication → Users*). Až bude potřeba, stačí nastavit vlastní SMTP (třeba Resend) a doplnit stránku pro reset hesla.
 - Registraci za člověka by mohl udělat i někdo jiný, kdo zná jeho e-mail, pokud ho předběhne. Pro rodinnou skupinu je to přijatelné riziko.
+
+## Nasazení
+
+Push do `main` spustí produkční build na Vercelu (projekt je propojený s `Frantma/christmas-draw`). Ruční nasazení: `npx vercel deploy --prod`.
+
+Když nasazení po pushi padá s `git_info_fail` („Git information retrieval failed“), propojení projektu s repem je rozbité. Dashboard ani `vercel git connect` repo nenabízely, propojení přes API fungovalo:
+
+```bash
+npx vercel api -X POST /v9/projects/christmas-draw/link -f type=github -f repo=Frantma/christmas-draw
+```
