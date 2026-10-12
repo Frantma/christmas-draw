@@ -1,5 +1,5 @@
 import { PageHead } from "@/components/page-head";
-import { ItemTransition, PageTransition } from "@/components/transitions";
+import { AnimatedList, ItemTransition, PageTransition } from "@/components/transitions";
 import { WishCard, WishPlaceholder } from "@/components/wish-card";
 import { AddWishButton, AddWishTile, MyWishActions } from "@/components/wish-actions";
 import { Card } from "@/components/ui/card";
@@ -30,16 +30,16 @@ export default async function MyWishesPage() {
             </AddWishButton>
           </Card>
         ) : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))] gap-[22px]">
+          <AnimatedList className="grid grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))] gap-[22px]">
             {wishes.map((wish, i) => (
               <ItemTransition key={wish.id}>
                 <WishCard wish={wish} index={i} actions={<MyWishActions wish={wish} />} />
               </ItemTransition>
             ))}
-            <ItemTransition>
+            <ItemTransition key="add-tile">
               <AddWishTile />
             </ItemTransition>
-          </div>
+          </AnimatedList>
         )}
       </div>
     </PageTransition>

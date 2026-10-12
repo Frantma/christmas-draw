@@ -4,7 +4,7 @@ import { Eyebrow } from "@/components/brand";
 import { PersonAvatar } from "@/components/person-avatar";
 import { Snow } from "@/components/snow";
 import { EnvelopeCard } from "@/components/reveal-envelope";
-import { PageTransition, RevealTransition, SealedTransition } from "@/components/transitions";
+import { PageTransition, RevealTransition } from "@/components/transitions";
 import { AddWishButton } from "@/components/wish-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -51,15 +51,13 @@ export default async function OverviewPage() {
             <p className="max-w-[560px] text-[17px] leading-relaxed text-cream/85">{heroText}</p>
             <div className="flex flex-wrap gap-2.5 pt-1.5 *:flex-auto sm:*:flex-none">
               <Button asChild>
-                <Link href="/komu-davam" transitionTypes={["nav-forward"]}>
+                <Link href="/komu-davam">
                   Komu dávám
                   <ArrowRightIcon aria-hidden="true" />
                 </Link>
               </Button>
               <Button asChild variant="onDark">
-                <Link href="/prani" transitionTypes={["nav-forward"]}>
-                  Moje přání
-                </Link>
+                <Link href="/prani">Moje přání</Link>
               </Button>
             </div>
           </div>
@@ -81,23 +79,19 @@ export default async function OverviewPage() {
                 {me.is_admin && (
                   <div className="mt-auto">
                     <Button asChild variant="secondary">
-                      <Link href="/sprava" transitionTypes={["nav-forward"]}>
-                        Přejít k losování
-                      </Link>
+                      <Link href="/sprava">Přejít k losování</Link>
                     </Button>
                   </div>
                 )}
               </div>
             )}
             {giftee.state === "sealed" && (
-              <SealedTransition>
-                <EnvelopeCard>
-                  <h2 className="font-heading text-[26px] font-semibold">Máš vylosováno</h2>
-                  <p className="leading-relaxed text-muted-foreground">
-                    Obálku otevři, až se nikdo nebude dívat přes rameno.
-                  </p>
-                </EnvelopeCard>
-              </SealedTransition>
+              <EnvelopeCard>
+                <h2 className="font-heading text-[26px] font-semibold">Máš vylosováno</h2>
+                <p className="leading-relaxed text-muted-foreground">
+                  Obálku otevři, až se nikdo nebude dívat přes rameno.
+                </p>
+              </EnvelopeCard>
             )}
             {giftee.state === "opened" && (
               <RevealTransition>
@@ -121,9 +115,7 @@ export default async function OverviewPage() {
                   </p>
                   <div className="mt-auto">
                     <Button asChild>
-                      <Link href="/komu-davam" transitionTypes={["nav-forward"]}>
-                        Zobrazit přání
-                      </Link>
+                      <Link href="/komu-davam">Zobrazit přání</Link>
                     </Button>
                   </div>
                 </div>
@@ -161,9 +153,7 @@ export default async function OverviewPage() {
             <div className="mt-auto flex flex-wrap gap-2">
               <AddWishButton variant="secondary" />
               <Button asChild variant="ghost">
-                <Link href="/prani" transitionTypes={["nav-forward"]}>
-                  Celý seznam
-                </Link>
+                <Link href="/prani">Celý seznam</Link>
               </Button>
             </div>
           </OverviewCard>

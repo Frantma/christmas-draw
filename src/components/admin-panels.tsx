@@ -5,7 +5,7 @@ import { CheckIcon, PlusIcon, ShuffleIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { addParticipant, cancelDraw, removeParticipant, runDraw, updateSettings } from "@/app/actions";
 import { PersonAvatar } from "@/components/person-avatar";
-import { ItemTransition, SwapTransition } from "@/components/transitions";
+import { AnimatedList, ItemTransition, SwapTransition } from "@/components/transitions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,26 +60,24 @@ export function ParticipantsPanel({ members, drawn }: { members: Member[]; drawn
         </Badge>
       </div>
 
-      <ul className="flex flex-col">
+      <AnimatedList as="ul" className="flex flex-col">
         {members.map((m) => (
-          <ItemTransition key={m.id}>
-            <li className="flex items-center gap-3.5 border-t border-[#eee5d3] py-3">
-              <PersonAvatar name={m.name} color={m.color} className="size-[42px]" textClassName="text-sm" />
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <span className="flex flex-wrap items-center gap-2 font-bold">
-                  {m.name}
-                  {m.is_admin && <Badge className="bg-pine-700 font-bold text-white">Správce</Badge>}
-                </span>
-                <span className="truncate text-sm text-muted-foreground">{m.email}</span>
-              </div>
-              <span className="hidden text-sm whitespace-nowrap text-muted-foreground min-[421px]:inline">
-                {m.wish_count} přání
+          <ItemTransition key={m.id} as="li" className="flex items-center gap-3.5 border-t border-[#eee5d3] py-3">
+            <PersonAvatar name={m.name} color={m.color} className="size-[42px]" textClassName="text-sm" />
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="flex flex-wrap items-center gap-2 font-bold">
+                {m.name}
+                {m.is_admin && <Badge className="bg-pine-700 font-bold text-white">Správce</Badge>}
               </span>
-              {!drawn && !m.is_admin ? <RemoveParticipant member={m} /> : <span className="w-11 flex-none" />}
-            </li>
+              <span className="truncate text-sm text-muted-foreground">{m.email}</span>
+            </div>
+            <span className="hidden text-sm whitespace-nowrap text-muted-foreground min-[421px]:inline">
+              {m.wish_count} přání
+            </span>
+            {!drawn && !m.is_admin ? <RemoveParticipant member={m} /> : <span className="w-11 flex-none" />}
           </ItemTransition>
         ))}
-      </ul>
+      </AnimatedList>
 
       <form onSubmit={onSubmit} className="flex flex-col gap-3 rounded-2xl bg-accent p-5">
         <span className="text-base font-bold">Přidat účastníka</span>
@@ -197,8 +195,8 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
         Každý dostane právě jednoho člověka a nikdo si nevylosuje sám sebe. Kdo má koho, neuvidí ani správce.
       </p>
 
-      {!status.drawn ? (
-        <SwapTransition>
+      <SwapTransition swapKey={status.drawn ? "drawn" : "not-drawn"}>
+        {!status.drawn ? (
           <div className="flex flex-col gap-2.5">
             <Button
               size="lg"
@@ -210,9 +208,7 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
             </Button>
             {n < 3 && <span className="text-sm text-gold-light">K losování jsou potřeba aspoň 3 účastníci.</span>}
           </div>
-        </SwapTransition>
-      ) : (
-        <SwapTransition>
+        ) : (
           <div className="flex flex-col gap-3.5">
             <Badge className="h-auto gap-2 self-start bg-gold-light px-3.5 py-2 text-sm font-bold text-pine-900">
               <CheckIcon aria-hidden="true" strokeWidth={3} />
@@ -241,8 +237,8 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
               />
             </div>
           </div>
-        </SwapTransition>
-      )}
+        )}
+      </SwapTransition>
     </section>
   );
 }

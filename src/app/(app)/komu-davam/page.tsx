@@ -4,7 +4,7 @@ import { PersonAvatar } from "@/components/person-avatar";
 import { Snow } from "@/components/snow";
 import { WishCard } from "@/components/wish-card";
 import { EnvelopeHero } from "@/components/reveal-envelope";
-import { ItemTransition, PageTransition, RevealTransition, SealedTransition } from "@/components/transitions";
+import { AnimatedList, ItemTransition, PageTransition, RevealTransition } from "@/components/transitions";
 import { BuyToggle } from "@/components/wish-actions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,9 +29,7 @@ export default async function GifteePage() {
           </p>
           {me.is_admin && (
             <Button asChild variant="secondary">
-              <Link href="/sprava" transitionTypes={["nav-forward"]}>
-                Přejít k losování
-              </Link>
+              <Link href="/sprava">Přejít k losování</Link>
             </Button>
           )}
         </Card>
@@ -42,14 +40,12 @@ export default async function GifteePage() {
   if (giftee.state === "sealed") {
     return (
       <PageTransition>
-        <SealedTransition>
-          <EnvelopeHero>
-            <h1 className="font-heading text-[32px] font-semibold sm:text-[38px]">Tvoje obálka je zapečetěná</h1>
-            <p className="max-w-[460px] leading-relaxed text-cream/85">
-              Uvnitř je jméno člověka, kterého letos obdarováváš. Rozhlédni se, jestli se nikdo nedívá.
-            </p>
-          </EnvelopeHero>
-        </SealedTransition>
+        <EnvelopeHero>
+          <h1 className="font-heading text-[32px] font-semibold sm:text-[38px]">Tvoje obálka je zapečetěná</h1>
+          <p className="max-w-[460px] leading-relaxed text-cream/85">
+            Uvnitř je jméno člověka, kterého letos obdarováváš. Rozhlédni se, jestli se nikdo nedívá.
+          </p>
+        </EnvelopeHero>
       </PageTransition>
     );
   }
@@ -100,7 +96,7 @@ export default async function GifteePage() {
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))] gap-[22px]">
+            <AnimatedList className="grid grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))] gap-[22px]">
               {wishes.map((wish, i) => {
                 const isBought = bought.includes(wish.id);
                 return (
@@ -115,7 +111,7 @@ export default async function GifteePage() {
                   </ItemTransition>
                 );
               })}
-            </div>
+            </AnimatedList>
           )}
         </div>
       </RevealTransition>

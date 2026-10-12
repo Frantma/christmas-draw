@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { navTypes } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
@@ -33,11 +32,7 @@ export function AppNav({ isAdmin }: { isAdmin: boolean }) {
               active && "bg-cream text-pine-900 hover:bg-cream hover:text-pine-900",
             )}
           >
-            <Link
-              href={item.href}
-              transitionTypes={navTypes(pathname, item.href)}
-              aria-current={active ? "page" : undefined}
-            >
+            <Link href={item.href} aria-current={active ? "page" : undefined}>
               {item.label}
             </Link>
           </Button>

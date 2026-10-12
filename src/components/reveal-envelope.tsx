@@ -1,9 +1,10 @@
 "use client";
 
-import { addTransitionType, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { revealEnvelope } from "@/app/actions";
 import { StarMark } from "@/components/brand";
+import { markJustRevealed } from "@/components/transitions";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,7 @@ function useReveal() {
   function open() {
     setOpening(true);
     startTransition(async () => {
-      addTransitionType("reveal");
+      markJustRevealed();
       // Animace dohraje, i když server odpoví dřív.
       const [result] = await Promise.all([revealEnvelope(), wait(ANIMATION_MS)]);
       if (result.error) {
