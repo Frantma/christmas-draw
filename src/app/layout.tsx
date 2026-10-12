@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   title: "Tajný Ježíšek",
   description: DESCRIPTION,
   applicationName: "Tajný Ježíšek",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false, noimageindex: true },
+  },
   openGraph: {
     type: "website",
     locale: "cs_CZ",

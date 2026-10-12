@@ -1,8 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Obrázky se nahrávají přímo do Supabase Storage z prohlížeče,
-  // server actions posílají jen text – výchozí limit 1 MB stačí.
+  // Soukromá rodinná aplikace – nesmí se objevit ve vyhledávačích.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" }],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
