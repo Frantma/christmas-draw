@@ -16,7 +16,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/prihlaseni
     const supabase = await createClient();
     const { data } = await supabase.auth.getClaims();
     if (data?.claims) {
-      const { data: member } = await supabase.from("participants").select("id").maybeSingle();
+      const { data: member } = await supabase
+        .from("participants")
+        .select("id")
+        .eq("user_id", data.claims.sub)
+        .maybeSingle();
       if (member) redirect("/");
     }
   }

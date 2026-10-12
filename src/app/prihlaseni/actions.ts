@@ -8,15 +8,18 @@ export type AuthState = { error?: string; notice?: string; email?: string };
 const MIN_PASSWORD = 8;
 
 export async function signIn(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
   if (!email || !password) return { error: "Vyplň e-mail i heslo.", email };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "Neznámý e-mail nebo špatné heslo.", email };
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) return { error: "Neznámý e-mail nebo špatné heslo.", email };
 
-  const { data: member } = await supabase.from("participants").select("id").maybeSingle();
+  // Člen vidí celou skupinu – je potřeba hledat konkrétně svůj řádek.
+  const { data: member } = await supabase.from("participants").select("id").eq("user_id", data.user.id).maybeSingle();
   if (!member) {
     await supabase.auth.signOut();
     return { error: "Tenhle účet už není ve skupině. Ozvi se správci.", email };
@@ -26,7 +29,9 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
 }
 
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
 
