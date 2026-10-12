@@ -1,6 +1,6 @@
 # Tajný Ježíšek
 
-**Produkce:** https://christmas-draw-rose.vercel.app · Vercel projekt `martin-frantas-projects/christmas-draw` · Supabase `arpiixkrcbwznycupacs`
+**Produkce:** https://vanoce.frantici.fun (DNS u WEDOS: CNAME `vanoce` → Vercel) · Vercel projekt `martin-frantas-projects/christmas-draw` · Supabase `arpiixkrcbwznycupacs`
 
 Push do `main` nasadí produkci automaticky (Vercel ↔ GitHub), push jiné větve vytvoří náhledové nasazení.
 
