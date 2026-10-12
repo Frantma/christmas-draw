@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lora, Manrope } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,9 +15,34 @@ const manrope = Manrope({
   subsets: ["latin", "latin-ext"],
 });
 
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3001";
+
+const DESCRIPTION = "Vánoční losování dárků. Sepiš přání, nech skupinu rozlosovat a obdaruj toho, koho ti los přidělí.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Tajný Ježíšek",
-  description: "Vánoční losování dárků pro rodinu a přátele.",
+  description: DESCRIPTION,
+  applicationName: "Tajný Ježíšek",
+  openGraph: {
+    type: "website",
+    locale: "cs_CZ",
+    siteName: "Tajný Ježíšek",
+    title: "Tajný Ježíšek",
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tajný Ježíšek",
+    description: DESCRIPTION,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0E2A20",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
