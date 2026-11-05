@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- obrázky jsou z libovolných domén */
 import { CheckIcon, ExternalLinkIcon, GiftIcon } from "lucide-react";
+import { WishDescription } from "@/components/wish-description";
 import { Card } from "@/components/ui/card";
 import { domain } from "@/lib/format";
 import type { Wish } from "@/lib/types";
@@ -55,11 +56,7 @@ export function WishCard({
       </div>
       <div className="flex flex-1 flex-col gap-2.5 p-5">
         <h3 className="font-heading text-[22px] leading-tight font-semibold">{wish.title}</h3>
-        {wish.description && (
-          <p className="line-clamp-3 text-[15px] leading-normal whitespace-pre-line text-muted-foreground">
-            {wish.description}
-          </p>
-        )}
+        {wish.description && <WishDescription text={wish.description} />}
         {wish.link && (
           <a
             href={wish.link}

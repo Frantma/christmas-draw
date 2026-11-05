@@ -3,6 +3,7 @@ import { ArrowRightIcon, CalendarIcon, GiftIcon, LockIcon, UsersIcon, WalletIcon
 import { Eyebrow } from "@/components/brand";
 import { PersonAvatar } from "@/components/person-avatar";
 import { Snow } from "@/components/snow";
+import { UnreadMessagesButton } from "@/components/unread-messages-button";
 import { EnvelopeCard } from "@/components/reveal-envelope";
 import { PageTransition, RevealTransition } from "@/components/transitions";
 import { AddWishButton } from "@/components/wish-actions";
@@ -59,6 +60,7 @@ export default async function OverviewPage() {
               <Button asChild variant="onDark">
                 <Link href="/prani">Moje přání</Link>
               </Button>
+              <UnreadMessagesButton />
             </div>
           </div>
           <Ornament />

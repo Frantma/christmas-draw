@@ -58,7 +58,7 @@ export function ItemTransition({
   const Component = as === "li" ? motion.li : motion.div;
   return (
     <Component
-      layout
+      layout="position"
       className={className}
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}

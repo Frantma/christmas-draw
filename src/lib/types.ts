@@ -27,3 +27,23 @@ export type DrawStatus = {
   opened: number;
   total: number;
 };
+
+export type ChatKind = "giftee" | "santa";
+
+/** Konverzace z pohledu přihlášeného. U „santa“ záměrně žádné údaje o dárci. */
+export type ChatInfo = {
+  kind: ChatKind;
+  thread_id: string;
+  title: string | null;
+  color: string | null;
+  can_write: boolean;
+  unread: number;
+};
+
+export type ChatMessage = {
+  id: string;
+  mine: boolean;
+  body: string;
+  wish_title: string | null;
+  created_at: string;
+};

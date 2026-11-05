@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LockIcon } from "lucide-react";
+import { LockIcon, MessageCircleIcon } from "lucide-react";
 import { PersonAvatar } from "@/components/person-avatar";
 import { Snow } from "@/components/snow";
 import { WishCard } from "@/components/wish-card";
@@ -106,7 +106,17 @@ export default async function GifteePage() {
                       index={i}
                       bought={isBought}
                       linkLabel="Otevřít odkaz"
-                      actions={<BuyToggle wishId={wish.id} bought={isBought} />}
+                      actions={
+                        <>
+                          <BuyToggle wishId={wish.id} bought={isBought} />
+                          <Button asChild variant="ghost" size="sm">
+                            <Link href={`/zpravy?prani=${wish.id}`}>
+                              <MessageCircleIcon aria-hidden="true" />
+                              Zeptat se
+                            </Link>
+                          </Button>
+                        </>
+                      }
                     />
                   </ItemTransition>
                 );

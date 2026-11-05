@@ -224,7 +224,7 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
                 disabled={pending}
                 label="Losovat znovu"
                 title="Losovat znovu?"
-                description="Všem se vylosuje nový člověk a otevřené obálky i značky „koupeno“ se vynulují."
+                description="Všem se vylosuje nový člověk. Otevřené obálky, značky „koupeno“ i všechny zprávy se smažou."
                 onConfirm={() => run(runDraw, "Rozlosováno znovu.")}
               />
               <ConfirmButton
@@ -232,7 +232,7 @@ export function DrawPanel({ status }: { status: DrawStatus }) {
                 disabled={pending}
                 label="Zrušit losování"
                 title="Zrušit losování?"
-                description="Dvojice se smažou a skupinu půjde znovu upravovat. Přání zůstanou."
+                description="Dvojice i všechny zprávy se smažou a skupinu půjde znovu upravovat. Přání zůstanou."
                 onConfirm={() => run(cancelDraw, "Losování zrušeno")}
               />
             </div>

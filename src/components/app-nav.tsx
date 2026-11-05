@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useChats } from "@/components/chat-provider";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -9,10 +11,12 @@ const ITEMS = [
   { href: "/", label: "Přehled" },
   { href: "/prani", label: "Moje přání" },
   { href: "/komu-davam", label: "Komu dávám" },
+  { href: "/zpravy", label: "Zprávy" },
 ];
 
 export function AppNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
+  const { unreadTotal } = useChats();
   const items = isAdmin ? [...ITEMS, { href: "/sprava", label: "Správa skupiny" }] : ITEMS;
 
   return (
@@ -34,6 +38,14 @@ export function AppNav({ isAdmin }: { isAdmin: boolean }) {
           >
             <Link href={item.href} aria-current={active ? "page" : undefined}>
               {item.label}
+              {item.href === "/zpravy" && unreadTotal > 0 && (
+                <Badge
+                  className="h-5 min-w-5 bg-primary px-1.5 text-[11px] font-bold text-white"
+                  aria-label={`${unreadTotal} nepřečtených zpráv`}
+                >
+                  {unreadTotal}
+                </Badge>
+              )}
             </Link>
           </Button>
         );

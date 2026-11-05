@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { DrawStatus, Member, Settings, Wish } from "@/lib/types";
+import type { ChatInfo, ChatKind, ChatMessage, DrawStatus, Member, Settings, Wish } from "@/lib/types";
 
 /** Přihlášený účastník. Bez účtu nebo mimo skupinu přesměruje na přihlášení. */
 export const getMe = cache(async () => {
@@ -91,4 +91,21 @@ export const getGiftee = cache(async (): Promise<GifteeState> => {
     wishes: (wishes ?? []) as Wish[],
     bought: (purchases ?? []).map((p) => p.wish_id as string),
   };
+});
+
+/** Moje dvě konverzace (s obdarovaným a se svým Ježíškem). Prázdné před losováním. */
+export const getChats = cache(async () => {
+  await getMe();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("my_chats");
+  if (error) throw error;
+  return (data ?? []) as ChatInfo[];
+});
+
+export const getChatMessages = cache(async (kind: ChatKind) => {
+  await getMe();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("chat_messages", { p_kind: kind });
+  if (error) throw error;
+  return (data ?? []) as ChatMessage[];
 });
