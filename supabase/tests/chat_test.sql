@@ -4,6 +4,11 @@ begin;
 create temp table results(step text, ok boolean, detail text) on commit drop;
 grant all on results to authenticated, anon;
 
+-- E-maily: bez klíče se nic neposílá; v testu dočasný klíč (v transakci se nic neodešle)
+select vault.create_secret('re_test_key', 'resend_api_key')
+where not exists (select 1 from vault.secrets where name = 'resend_api_key');
+create temp table queue_before as select coalesce(max(id), 0) as max_id from net.http_request_queue;
+
 -- Fiktivní skupina: skutečný správce + 3 testovací lidé (jen v transakci)
 select set_config('test.admin', (select user_id::text from public.participants where is_admin limit 1), false);
 
@@ -77,11 +82,12 @@ select public.send_message('giftee', 'Jakou velikost hrnku?', (select id from pu
 do $$ begin perform public.send_message('giftee', 'cizí přání', current_setting('test.foreign_wish')::uuid);
   insert into results values ('G nemůže odkázat na cizí přání', false, null);
 exception when others then insert into results values ('G nemůže odkázat na cizí přání', sqlerrm like '%INVALID_WISH%', sqlerrm); end $$;
-insert into results select 'G vidí obě zprávy, svoji jako mine', count(*) = 2 and bool_or(mine) and bool_or(not mine), count(*)::text from public.chat_messages('giftee');
+select public.send_message('giftee', 'A jakou barvu?');
+insert into results select 'G vidí 3 zprávy, svoje jako mine', count(*) = 3 and bool_or(mine) and bool_or(not mine), count(*)::text from public.chat_messages('giftee');
 
 -- 4) Jana: vidí zprávy, ale nic o odesílateli
 select set_config('request.jwt.claims','{"sub":"00000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
-insert into results select 'Jana vidí 2 zprávy, odkaz na Hrnek', count(*) = 2 and bool_or(wish_title = 'Hrnek'), count(*)::text from public.chat_messages('santa');
+insert into results select 'Jana vidí 3 zprávy, odkaz na Hrnek', count(*) = 3 and bool_or(wish_title = 'Hrnek'), count(*)::text from public.chat_messages('santa');
 insert into results select 'Jana: v datech zprávy není jméno ani ID dárce',
   not bool_or(row_to_json(c)::text like '%' || current_setting('test.gname') || '%'
            or row_to_json(c)::text like '%' || current_setting('test.gpid') || '%'
@@ -98,7 +104,7 @@ insert into results select 'Jana nevidí řádek losování dárce', count(*) = 
   from public.assignments where giver_id::text = current_setting('test.gpid');
 do $$ begin perform private.chat_thread('santa'); insert into results values ('Jana nemůže volat private.chat_thread', false, null);
 exception when others then insert into results values ('Jana nemůže volat private.chat_thread', sqlerrm like '%permission denied%', sqlerrm); end $$;
-insert into results select 'Jana: 1 nepřečtená před přečtením', unread = 1, unread::text from public.my_chats() where kind = 'santa';
+insert into results select 'Jana: 2 nepřečtené před přečtením', unread = 2, unread::text from public.my_chats() where kind = 'santa';
 select public.mark_chat_read('santa');
 insert into results select 'Jana: 0 nepřečtených po přečtení', unread = 0, unread::text from public.my_chats() where kind = 'santa';
 
@@ -130,6 +136,26 @@ reset role; set local role anon;
 do $$ begin perform public.my_chats(); insert into results values ('Anon nemůže volat my_chats', false, null);
 exception when others then insert into results values ('Anon nemůže volat my_chats', sqlerrm like '%permission denied%', sqlerrm); end $$;
 reset role;
+
+-- 8) E-maily ve frontě pg_net (v transakci, nic se neodešle)
+reset role;
+create temp table mails as
+select convert_from(q.body, 'UTF8')::jsonb as b from net.http_request_queue q
+where q.id > (select max_id from queue_before) and q.url = 'https://api.resend.com/emails';
+insert into results select 'E-mail: Ježíšek dostal 1 upozornění (Jana psala jednou)',
+  count(*) = 1, count(*)::text from mails m
+  where m.b->'to'->>0 = (select email from public.participants where user_id::text = current_setting('test.g'));
+insert into results select 'E-mail: Jana dostala jen 1 upozornění na 2 zprávy za sebou',
+  count(*) = 1, count(*)::text from mails m where m.b->'to'->>0 = 'jana.chat@t.cz';
+insert into results select 'E-mail Janě neobsahuje jméno, e-mail ani ID dárce ani text zprávy',
+  not bool_or(m.b::text like '%' || current_setting('test.gname') || '%'
+           or m.b::text like '%' || (select email from public.participants where user_id::text = current_setting('test.g')) || '%'
+           or m.b::text like '%' || current_setting('test.gpid') || '%'
+           or m.b::text like '%velikost hrnku%'),
+  max(m.b->>'subject') from mails m where m.b->'to'->>0 = 'jana.chat@t.cz';
+insert into results select 'E-mail jde z jezisek@frantici.fun bez reply-to',
+  bool_and(m.b->>'from' = 'Tajný Ježíšek <jezisek@frantici.fun>' and not (m.b ? 'reply_to')), null from mails m;
+insert into results select 'E-maily nedostal nikdo jiný', count(*) = 2, count(*)::text from mails;
 
 -- 8) Zrušení losování smaže zprávy
 set local role authenticated;
