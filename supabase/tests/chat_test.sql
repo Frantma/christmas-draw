@@ -153,8 +153,8 @@ insert into results select 'E-mail Janě neobsahuje jméno, e-mail ani ID dárce
            or m.b::text like '%' || current_setting('test.gpid') || '%'
            or m.b::text like '%velikost hrnku%'),
   max(m.b->>'subject') from mails m where m.b->'to'->>0 = 'jana.chat@t.cz';
-insert into results select 'E-mail jde z jezisek@vanoce.frantici.fun bez reply-to',
-  bool_and(m.b->>'from' = 'Tajný Ježíšek <jezisek@vanoce.frantici.fun>' and not (m.b ? 'reply_to')), null from mails m;
+insert into results select 'E-mail jde z jezisek@frantici.fun bez reply-to',
+  bool_and(m.b->>'from' = 'Tajný Ježíšek <jezisek@frantici.fun>' and not (m.b ? 'reply_to')), null from mails m;
 insert into results select 'E-maily nedostal nikdo jiný', count(*) = 2, count(*)::text from mails;
 
 -- 8) Zrušení losování smaže zprávy
